@@ -1,0 +1,124 @@
+{
+  "name": "Shopping Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "=Product-query",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "93a62dce-5a7a-4721-9671-3da24613f59e",
+      "name": "Webhook",
+      "webhookId": "4359a7c1-881c-483b-bba4-3064d8266c23"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "22a80bfd-194f-4396-92b6-9865734b38d3",
+      "name": "When chat message received",
+      "webhookId": "7f120f88-a20c-4e8b-b559-9877e06892b4"
+    },
+    {
+      "parameters": {
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        384,
+        -64
+      ],
+      "id": "cbc49d1e-1b17-4d6e-9f71-56ac61971da1",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "maxTokens": 10
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        480,
+        144
+      ],
+      "id": "feb45bda-7394-4987-929c-3afcfb3d5fb7",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "3duwYtMdT2kZVcvx",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\n// Get global static data store\nconst staticData = $getWorkflowStaticData('global');\n\nfor (const item of $input.all()) {\n  const currentMessage = item.json.message || \"No message found\"; // adjust key as needed\n  staticData.lastMessage = currentMessage;\n\n  // Add confirmation in output JSON\n  item.json.savedToMemory = staticData.lastMessage;\n}\n\nreturn $input.all();\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        64
+      ],
+      "id": "1c775c7a-979d-4336-8b1f-8c9b4a0182e1",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c4af86f8-a727-416b-9d74-aa360e967e88",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6390301bb6d4c1a747bb3551087e70ecd306a1cf4561c64c794e0fa1040b4679"
+  },
+  "id": "brnCIgDxxnegrSPy",
+  "tags": []
+}
